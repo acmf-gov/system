@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
       where: { phone }
     })
 
-    let encryptedPhone = null
+    let encryptedPhone: string | null = null
     let userByEncryptedPhone = null
 
     // Tentar buscar por telefone criptografado

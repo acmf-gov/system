@@ -51,7 +51,7 @@ function createEnvFile() {
 # Gerado em: ${new Date().toISOString()}
 
 # Database
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="mysql://admin:@Wad235rt@168.231.127.189:9897/dbcenter"
 
 # NextAuth
 NEXTAUTH_SECRET="${generateBase64Key(32)}"
