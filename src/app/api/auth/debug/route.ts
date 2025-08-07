@@ -1,0 +1,107 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+import { decryptUserData, encrypt } from '@/lib/encryption'
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const phone = searchParams.get('phone')
+
+    if (!phone) {
+      return NextResponse.json(
+        { error: 'Telefone é obrigatório' },
+        { status: 400 }
+      )
+    }
+
+    // Buscar usuário pelo telefone original
+    let user = await db.user.findUnique({
+      where: { phone }
+    })
+
+    let encryptedPhone = null
+    let userByEncryptedPhone = null
+
+    // Tentar buscar por telefone criptografado
+    if (!user) {
+      try {
+        encryptedPhone = encrypt(phone)
+        userByEncryptedPhone = await db.user.findUnique({
+          where: { phone: encryptedPhone }
+        })
+      } catch (error) {
+        console.error('Erro ao criptografar telefone:', error)
+      }
+    }
+
+    // Buscar todos os usuários para diagnóstico (limitado a 10)
+    const allUsers = await db.user.findMany({
+      take: 10,
+      select: {
+        id: true,
+        phone: true,
+        name: true,
+        isActive: true,
+        isAdmin: true,
+        createdAt: true
+      }
+    })
+
+    // Tentar descriptografar os usuários para diagnóstico
+    const decryptedUsers = allUsers.map(u => {
+      try {
+        const decrypted = decryptUserData(u)
+        return {
+          id: decrypted.id,
+          phone: decrypted.phone,
+          name: decrypted.name,
+          isActive: decrypted.isActive,
+          isAdmin: decrypted.isAdmin,
+          createdAt: decrypted.createdAt
+        }
+      } catch (error) {
+        return {
+          id: u.id,
+          phone: u.phone,
+          name: u.name,
+          isActive: u.isActive,
+          isAdmin: u.isAdmin,
+          createdAt: u.createdAt,
+          error: 'Failed to decrypt'
+        }
+      }
+    })
+
+    return NextResponse.json({
+      searchPhone: phone,
+      encryptedPhone: encryptedPhone,
+      foundByOriginalPhone: !!user,
+      foundByEncryptedPhone: !!userByEncryptedPhone,
+      userByOriginalPhone: user ? {
+        id: user.id,
+        phone: user.phone,
+        name: user.name,
+        isActive: user.isActive,
+        isAdmin: user.isAdmin,
+        createdAt: user.createdAt
+      } : null,
+      userByEncryptedPhone: userByEncryptedPhone ? {
+        id: userByEncryptedPhone.id,
+        phone: userByEncryptedPhone.phone,
+        name: userByEncryptedPhone.name,
+        isActive: userByEncryptedPhone.isActive,
+        isAdmin: userByEncryptedPhone.isAdmin,
+        createdAt: userByEncryptedPhone.createdAt
+      } : null,
+      allUsersSample: decryptedUsers,
+      totalUsers: await db.user.count()
+    })
+
+  } catch (error) {
+    console.error('Erro no debug:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor', details: error.message },
+      { status: 500 }
+    )
+  }
+}

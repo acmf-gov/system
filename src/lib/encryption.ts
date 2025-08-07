@@ -25,14 +25,42 @@ export const decrypt = (encryptedData: string): string => {
   }
 }
 
+// Generate deterministic hash for searchable fields
+export const generateHash = (data: string): string => {
+  try {
+    return CryptoJS.HmacSHA256(data, ENCRYPTION_KEY).toString()
+  } catch (error) {
+    console.error('Hash generation error:', error)
+    throw new Error('Failed to generate hash')
+  }
+}
+
 // Encrypt sensitive user data
 export const encryptUserData = (userData: any): any => {
-  const sensitiveFields = ['phone', 'email', 'name']
   const encryptedData = { ...userData }
   
-  sensitiveFields.forEach(field => {
+  // For phone, we'll store both encrypted and hashed versions
+  if (encryptedData.phone) {
+    try {
+      // Store the encrypted version for decryption
+      encryptedData.phoneEncrypted = encrypt(encryptedData.phone)
+      // Store the hashed version for searching
+      encryptedData.phoneHash = generateHash(encryptedData.phone)
+      // Keep the original phone for now (we'll remove it after storing)
+    } catch (error) {
+      console.error('Failed to encrypt phone:', error)
+    }
+  }
+  
+  // For other sensitive fields, just encrypt them
+  const otherSensitiveFields = ['email', 'name']
+  otherSensitiveFields.forEach(field => {
     if (encryptedData[field]) {
-      encryptedData[field] = encrypt(encryptedData[field])
+      try {
+        encryptedData[field] = encrypt(encryptedData[field])
+      } catch (error) {
+        console.error(`Failed to encrypt ${field}:`, error)
+      }
     }
   })
   
@@ -41,15 +69,24 @@ export const encryptUserData = (userData: any): any => {
 
 // Decrypt sensitive user data
 export const decryptUserData = (encryptedData: any): any => {
-  const sensitiveFields = ['phone', 'email', 'name']
   const decryptedData = { ...encryptedData }
   
-  sensitiveFields.forEach(field => {
+  // Decrypt phone from encrypted field
+  if (decryptedData.phoneEncrypted) {
+    try {
+      decryptedData.phone = decrypt(decryptedData.phoneEncrypted)
+    } catch (error) {
+      console.warn('Failed to decrypt phone, keeping original')
+    }
+  }
+  
+  // Decrypt other sensitive fields
+  const otherSensitiveFields = ['email', 'name']
+  otherSensitiveFields.forEach(field => {
     if (decryptedData[field]) {
       try {
         decryptedData[field] = decrypt(decryptedData[field])
       } catch (error) {
-        // If decryption fails, keep original data
         console.warn(`Failed to decrypt ${field}, keeping original`)
       }
     }

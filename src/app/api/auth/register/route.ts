@@ -6,6 +6,33 @@ import { encryptUserData } from '@/lib/encryption'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
+// Generate a unique referral code
+async function generateUniqueReferralCode(): Promise<string> {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  let result = ''
+  let isUnique = false
+  let attempts = 0
+  
+  while (!isUnique && attempts < 10) {
+    result = ''
+    for (let i = 0; i < 8; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    
+    // Check if code is unique
+    const existingUser = await db.user.findUnique({
+      where: { referralCode: result }
+    })
+    
+    if (!existingUser) {
+      isUnique = true
+    }
+    attempts++
+  }
+  
+  return result
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { phone, password, name, referralCode } = await request.json()
@@ -51,16 +78,23 @@ export async function POST(request: NextRequest) {
     const userData: any = {
       phone,
       password: hashedPassword,
-      name: name || null
+      name: name || null,
+      referralCode: await generateUniqueReferralCode(),
+      isActive: true, // Garantir que novos usuários sejam ativos
+      isVerified: false,
+      isAdmin: false
     }
 
     // Add referral information if valid
     if (referrerUser) {
-      userData.referredBy = referrerUser.id
+      userData.referredById = referrerUser.id
     }
 
     // Encrypt sensitive data before storing
     const encryptedUserData = encryptUserData(userData)
+
+    // Remove the original phone field as it's now stored in phoneEncrypted and phoneHash
+    delete encryptedUserData.phone
 
     const user = await db.user.create({
       data: encryptedUserData

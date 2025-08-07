@@ -4,13 +4,15 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User {
   id              String   @id @default(cuid())
-  phone           String   @unique
+  phone           String?  @unique
+  phoneEncrypted  String?
+  phoneHash       String?  @unique
   password        String
   name            String?
   email           String?  @unique
@@ -164,6 +166,7 @@ model Delivery {
   orderId     String
   userId      String
   addressId   String
+  bargeId     String
   status      String   @default("pending") // 'pending', 'confirmed', 'preparing', 'on_the_way', 'delivered', 'cancelled'
   deliveryman String?
   notes       String?
@@ -176,7 +179,7 @@ model Delivery {
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   address     Address   @relation(fields: [addressId], references: [id], onDelete: Cascade)
-  barge       Barge    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  barge       Barge    @relation(fields: [bargeId], references: [id], onDelete: Cascade)
   notifications Notification[] @relation("DeliveryNotifications")
 
   @@map("deliveries")
