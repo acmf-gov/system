@@ -10,20 +10,17 @@ module.exports = {
       NODE_ENV: 'production',
       PORT: 3000
     },
-    error_file: '/var/log/pm2/barca-error.log',
-    out_file: '/var/log/pm2/barca-out.log',
-    log_file: '/var/log/pm2/barca-combined.log',
+    error_file: '/var/log/pm2/barca-coletiva-error.log',
+    out_file: '/var/log/pm2/barca-coletiva-out.log',
+    log_file: '/var/log/pm2/barca-coletiva-combined.log',
     time: true,
     autorestart: true,
     watch: false,
     max_memory_restart: '1G',
-    // Configurações de reinicialização
     max_restarts: 10,
     min_uptime: '10s',
-    // Configurações de monitoramento
     merge_logs: true,
     source_map_support: true,
-    // Configurações de ambiente
     node_args: '--max-old-space-size=1024'
   }]
 };

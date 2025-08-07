@@ -1,0 +1,73 @@
+🚤 INSTALAÇÃO AUTOMÁTICA NO EASY PANEL - PASSO A PASSO
+==========================================================
+
+🎯 O QUE VOCÊ PRECISA FAZER (ZERO CONFIGURAÇÃO MANUAL!)
+==========================================================
+
+PASSO 1: FAZER UPLOAD PARA O GITHUB
+git add .
+git commit -m "Ready for Easy Panel auto-install"
+git push origin main
+
+PASSO 2: NO EASY PANEL
+1. Applications → Create Application
+2. Escolher "Node.js"
+3. Preencher:
+   - Application Name: barca-coletiva
+   - Domain: seu-dominio.com
+   - Node.js Version: 20
+   - Build Command: npm install
+   - Start Command: npm start
+   - Working Directory: /var/www/barca-coletiva
+
+PASSO 3: VARIÁVEIS DE AMBIENTE (OPCIONAL)
+NODE_ENV=production
+PORT=3000
+EASY_PANEL=true
+
+PASSO 4: DEPLOY
+Clique em "Deploy" e aguarde!
+
+PASSO 5: ACESSAR E USAR!
+URL: http://seu-dominio.com
+Admin: admin/@Wad235rt
+
+==========================================================
+🔥 O QUE ACONTECE AUTOMATICAMENTE (MÁGICA!)
+==========================================================
+
+✅ npm install - Instala todas as dependências
+✅ postinstall - Roda script de auto-instalação
+✅ Cria .env - Gera chaves aleatórias automaticamente
+✅ Prisma Generate - Gera cliente do banco
+✅ Database Push - Configura banco de dados
+✅ Build - Compila aplicação Next.js
+✅ Cria Admin - Cria usuário admin automaticamente
+✅ Start - Inicia aplicação pronta para usar
+
+==========================================================
+📁 ARQUIVOS QUE FAZEM A MÁGICA ACONTECER
+==========================================================
+
+auto-install.js    - Script pós-instalação automático
+server.js          - Servidor com setup automático
+package.json       - Scripts automáticos (postinstall)
+prisma/schema.prisma - Schema do banco de dados
+
+==========================================================
+🚨 SE DER ERRO
+==========================================================
+
+1. Verifique os logs no Easy Panel
+2. Clique em "Restart" para reiniciar
+3. Verifique se o build concluiu
+4. Tente fazer deploy novamente
+
+==========================================================
+🎉 PRONTO! SEU SISTEMA ESTÁ NO AR! 🚤✨
+==========================================================
+
+Acesse: http://seu-dominio.com
+Admin: admin/@Wad235rt
+
+Tudo configurado automaticamente!
