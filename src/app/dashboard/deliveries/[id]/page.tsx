@@ -507,7 +507,7 @@ export default function DeliveryDetailPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => openInMaps(`${order.address.street}, ${order.address.number}, ${order.address.neighborhood}, ${order.address.city}, ${order.address.state}`)}
+                            onClick={() => openInMaps(`${order.address!.street}, ${order.address!.number}, ${order.address!.neighborhood}, ${order.address!.city}, ${order.address!.state}`)}
                           >
                             <Navigation className="h-4 w-4" />
                           </Button>

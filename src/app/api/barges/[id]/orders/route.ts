@@ -3,10 +3,10 @@ import { db } from '@/lib/db'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const { grams, addressId, notes } = await request.json()
 
     if (!grams) {
@@ -18,10 +18,10 @@ export async function POST(
 
     // Verificar se a barca existe e está ativa
     const barge = await db.barge.findUnique({
-      where: { id, isActive: true }
+      where: { id }
     })
 
-    if (!barge) {
+    if (!barge || barge.status !== 'active') {
       return NextResponse.json(
         { error: 'Barca não encontrada ou inativa' },
         { status: 404 }
@@ -29,12 +29,7 @@ export async function POST(
     }
 
     // Verificar se a barca ainda aceita pedidos
-    if (barge.status !== 'ACTIVE') {
-      return NextResponse.json(
-        { error: 'Esta barca não está mais aceitando pedidos' },
-        { status: 400 }
-      )
-    }
+    // Nota: já verificado acima com barge.status !== 'active'
 
     // Obter o usuário do token (simplificado - em produção usar JWT proper)
     const authHeader = request.headers.get('authorization')
@@ -66,15 +61,15 @@ export async function POST(
     }
 
     // Calcular o total do pedido
-    const total = grams * barge.unitPrice
+    const total = grams * barge.pricePerGram
 
     // Criar o pedido
     const order = await db.order.create({
       data: {
         userId,
         bargeId: id,
-        grams,
-        total,
+        totalGrams: grams,
+        totalPrice: total,
         addressId: addressId || null,
         notes: notes || null
       },
@@ -102,10 +97,10 @@ export async function POST(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     const orders = await db.order.findMany({
       where: { bargeId: id },

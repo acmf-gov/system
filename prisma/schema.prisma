@@ -120,7 +120,7 @@ model Order {
   orderItems  OrderItem[]
   payments    Payment[]
   deliveries  Delivery[]
-  notifications Notification[]
+  notifications Notification[] @relation("OrderNotifications")
 
   @@map("orders")
 }
@@ -143,6 +143,7 @@ model OrderItem {
 model Payment {
   id          String   @id @default(cuid())
   orderId     String
+  userId      String
   amount      Float
   method      String   // 'pix', 'credit_card', 'cash', 'transfer'
   status      String   @default("pending") // 'pending', 'confirmed', 'failed', 'refunded'
@@ -152,7 +153,8 @@ model Payment {
 
   // Relacionamentos
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  notifications Notification[]
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notifications Notification[] @relation("PaymentNotifications")
 
   @@map("payments")
 }
@@ -160,6 +162,7 @@ model Payment {
 model Delivery {
   id          String   @id @default(cuid())
   orderId     String
+  userId      String
   addressId   String
   status      String   @default("pending") // 'pending', 'confirmed', 'preparing', 'on_the_way', 'delivered', 'cancelled'
   deliveryman String?
@@ -171,9 +174,10 @@ model Delivery {
 
   // Relacionamentos
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   address     Address   @relation(fields: [addressId], references: [id], onDelete: Cascade)
   barge       Barge    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  notifications Notification[]
+  notifications Notification[] @relation("DeliveryNotifications")
 
   @@map("deliveries")
 }
@@ -191,6 +195,9 @@ model Notification {
 
   // Relacionamentos
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order     Order?   @relation("OrderNotifications", fields: [orderId], references: [id], onDelete: Cascade)
+  payment   Payment? @relation("PaymentNotifications", fields: [paymentId], references: [id], onDelete: Cascade)
+  delivery  Delivery? @relation("DeliveryNotifications", fields: [deliveryId], references: [id], onDelete: Cascade)
   orderId   String?
   paymentId String?
   deliveryId String?

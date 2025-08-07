@@ -81,12 +81,12 @@ export const setupSocket = (io: Server) => {
         // Save message to database
         const message = await db.chatMessage.create({
           data: {
-            text: data.text,
-            senderId: userId,
+            message: data.text,
+            userId: userId,
             roomId: data.roomId,
           },
           include: {
-            sender: {
+            user: {
               select: {
                 id: true,
                 name: true,
@@ -100,7 +100,7 @@ export const setupSocket = (io: Server) => {
         io.to(`room:${data.roomId}`).emit('new-message', message);
         
         // Send notification to room members (except sender)
-        const roomMembers = await db.chatRoomMember.findMany({
+        const roomMembers = await db.chatMember.findMany({
           where: {
             roomId: data.roomId,
             userId: {
@@ -173,7 +173,7 @@ export const setupSocket = (io: Server) => {
         // Find or create private room
         let room = await db.chatRoom.findFirst({
           where: {
-            type: 'PRIVATE',
+            isPrivate: true,
             members: {
               every: {
                 userId: {
@@ -188,12 +188,11 @@ export const setupSocket = (io: Server) => {
           room = await db.chatRoom.create({
             data: {
               name: 'Private Chat',
-              type: 'PRIVATE',
               isPrivate: true,
               members: {
                 create: [
-                  { userId: senderId, role: 'ADMIN' },
-                  { userId: data.recipientId, role: 'MEMBER' }
+                  { userId: senderId },
+                  { userId: data.recipientId }
                 ]
               }
             }
@@ -203,12 +202,12 @@ export const setupSocket = (io: Server) => {
         // Create and save message
         const message = await db.chatMessage.create({
           data: {
-            text: data.text,
-            senderId: senderId,
+            message: data.text,
+            userId: senderId,
             roomId: room.id,
           },
           include: {
-            sender: {
+            user: {
               select: {
                 id: true,
                 name: true,

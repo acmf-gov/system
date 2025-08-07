@@ -79,7 +79,7 @@ export default function ChatRoomPage() {
   const [typingUsers, setTypingUsers] = useState<string[]>([])
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const typingTimeoutRef = useRef<NodeJS.Timeout>()
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     fetchRoom()

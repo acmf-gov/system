@@ -23,7 +23,7 @@ import {
   AlertCircle,
   Map
 } from "lucide-react"
-import DeliveryMap from "@/components/map/delivery-map"
+// import DeliveryMap from "@/components/map/delivery-map"
 
 interface Delivery {
   id: string
@@ -385,6 +385,15 @@ export default function DeliveriesPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Mapa de entregas temporariamente desabilitado */}
+          <div className="flex items-center justify-center h-96 bg-gray-100 rounded-lg">
+            <div className="text-center">
+              <Map className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-600 mb-2">Mapa de Entregas</h3>
+              <p className="text-gray-500">Funcionalidade temporariamente desabilitada</p>
+            </div>
+          </div>
+          {/* 
           <DeliveryMap 
             routes={deliveries.map(delivery => ({
               id: delivery.id,
@@ -394,23 +403,20 @@ export default function DeliveriesPage() {
                 id: order.id,
                 name: order.user.name || order.user.phone,
                 address: order.address ? `${order.address.street}, ${order.address.number} - ${order.address.neighborhood}, ${order.address.city}` : 'Endereço não informado',
-                coordinates: order.address?.latitude && order.address?.longitude 
-                  ? [order.address.latitude, order.address.longitude] as const
-                  : [-23.5505, -46.6333] as const, // Default to São Paulo
+                coordinates: [-23.5505, -46.6333] as const, // Coordenadas padrão de São Paulo
                 type: 'delivery' as const,
                 status: delivery.status.toLowerCase() as 'pending' | 'in_progress' | 'completed'
               })),
-              routeCoordinates: delivery.barge.orders
-                .filter(order => order.address?.latitude && order.address?.longitude)
-                .map(order => [order.address!.latitude, order.address!.longitude] as const),
-              driver: delivery.deliveryPerson ? {
-                name: delivery.deliveryPerson,
-                phone: delivery.deliveryRoute?.driver?.phone || 'Não informado',
+              routeCoordinates: delivery.barge.orders.map(() => [-23.5505, -46.6333] as const), // Coordenadas padrão
+              driver: delivery.deliveryman ? {
+                name: delivery.deliveryman,
+                phone: 'Não informado',
                 currentLocation: [-23.5505, -46.6333] as const // Default location
               } : undefined
             }))}
             height="400px"
           />
+          */}
         </CardContent>
       </Card>
 

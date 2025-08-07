@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   images: {
     domains: ['localhost'],
     unoptimized: true,
@@ -12,9 +11,6 @@ const nextConfig = {
       use: ['@svgr/webpack'],
     });
     return config;
-  },
-  experimental: {
-    serverActions: true,
   },
   // Configuração para produção
   output: 'standalone',

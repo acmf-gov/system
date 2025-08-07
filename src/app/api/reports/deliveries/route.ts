@@ -57,13 +57,13 @@ export async function GET(request: NextRequest) {
     })
 
     const totalDeliveries = deliveries.length
-    const onTime = deliveries.filter(d => d.status === 'DELIVERED').length
-    const delayed = deliveries.filter(d => d.status === 'IN_TRANSIT' && 
-      new Date(d.deliveryDate || d.createdAt) < new Date()).length
-    const cancelled = deliveries.filter(d => d.status === 'CANCELLED').length
+    const onTime = deliveries.filter(d => d.status === 'delivered').length
+    const delayed = deliveries.filter(d => d.status === 'on_the_way' && 
+      new Date(d.estimatedTime || d.createdAt) < new Date()).length
+    const cancelled = deliveries.filter(d => d.status === 'cancelled').length
 
     // Calculate average delivery time (in hours)
-    const completedDeliveries = deliveries.filter(d => d.status === 'DELIVERED' && d.deliveredAt)
+    const completedDeliveries = deliveries.filter(d => d.status === 'delivered' && d.deliveredAt)
     const averageDeliveryTime = completedDeliveries.length > 0 
       ? completedDeliveries.reduce((sum, d) => {
           const deliveryTime = new Date(d.deliveredAt!).getTime() - new Date(d.createdAt).getTime()

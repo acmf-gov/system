@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     // Get user's referrals
     const referrals = await db.user.findMany({
       where: {
-        referredBy: decoded.userId
+        referredById: decoded.userId
       },
       select: {
         id: true,
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
         orders: {
           select: {
             createdAt: true,
-            total: true
+            totalPrice: true
           }
         }
       },
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
         status: referral.isActive ? (firstOrder ? 'completed' : 'active') : 'pending',
         joinedAt: referral.createdAt,
         firstOrderAt: firstOrder?.createdAt,
-        bonusEarned: referral.orders.reduce((sum, order) => sum + (order.total * 0.05), 0) // 5% bonus
+        bonusEarned: referral.orders.reduce((sum, order) => sum + (order.totalPrice * 0.05), 0) // 5% bonus
       }
     })
 

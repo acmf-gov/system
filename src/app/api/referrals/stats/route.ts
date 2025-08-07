@@ -17,12 +17,12 @@ export async function GET(request: NextRequest) {
     // Get user's referrals
     const referrals = await db.user.findMany({
       where: {
-        referredBy: decoded.userId
+        referredById: decoded.userId
       },
       include: {
         orders: {
           select: {
-            total: true,
+            totalPrice: true,
             createdAt: true
           }
         }
@@ -34,13 +34,13 @@ export async function GET(request: NextRequest) {
     
     // Calculate bonuses
     const totalBonus = referrals.reduce((sum, referral) => {
-      return sum + referral.orders.reduce((orderSum, order) => orderSum + (order.total * 0.05), 0)
+      return sum + referral.orders.reduce((orderSum, order) => orderSum + (order.totalPrice * 0.05), 0)
     }, 0)
 
     const pendingBonus = referrals
       .filter(r => !r.isActive)
       .reduce((sum, referral) => {
-        return sum + referral.orders.reduce((orderSum, order) => orderSum + (order.total * 0.05), 0)
+        return sum + referral.orders.reduce((orderSum, order) => orderSum + (order.totalPrice * 0.05), 0)
       }, 0)
 
     // Calculate conversion rate (referrals who became active)

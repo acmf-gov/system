@@ -51,7 +51,7 @@ function createEnvFile() {
 # Gerado em: ${new Date().toISOString()}
 
 # Database
-DATABASE_URL="postgresql://barca_user:${generateBase64Key(12)}@localhost:5432/barca_coletiva"
+DATABASE_URL="file:./dev.db"
 
 # NextAuth
 NEXTAUTH_SECRET="${generateBase64Key(32)}"

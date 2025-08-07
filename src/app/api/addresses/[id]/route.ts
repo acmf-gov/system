@@ -3,9 +3,10 @@ import { db } from '@/lib/db'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const authHeader = request.headers.get('authorization')
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -18,7 +19,6 @@ export async function PUT(
     const tokenData = Buffer.from(token, 'base64').toString().split(':')
     const userId = tokenData[0]
 
-    const { id } = params
     const { street, number, complement, neighborhood, city, state, zipCode } = await request.json()
 
     // Verificar se o endereço pertence ao usuário
@@ -58,9 +58,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const authHeader = request.headers.get('authorization')
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -72,8 +73,6 @@ export async function DELETE(
     const token = authHeader.substring(7)
     const tokenData = Buffer.from(token, 'base64').toString().split(':')
     const userId = tokenData[0]
-
-    const { id } = params
 
     // Verificar se o endereço pertence ao usuário
     const existingAddress = await db.address.findFirst({

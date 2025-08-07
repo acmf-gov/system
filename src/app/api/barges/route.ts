@@ -5,10 +5,14 @@ export async function GET(request: NextRequest) {
   try {
     const barges = await db.barge.findMany({
       where: {
-        isActive: true
+        status: 'active'
       },
       include: {
-        product: true,
+        bargeProducts: {
+          include: {
+            product: true
+          }
+        },
         orders: {
           include: {
             user: {
@@ -38,29 +42,29 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { title, description, productId, targetGrams, unitPrice, eventDate } = await request.json()
+    const { name, description, productId, targetGrams, pricePerGram, startDate } = await request.json()
 
-    if (!title || !productId || !targetGrams || !unitPrice || !eventDate) {
+    if (!name || !productId || !targetGrams || !pricePerGram || !startDate) {
       return NextResponse.json(
         { error: 'Todos os campos obrigatórios devem ser preenchidos' },
         { status: 400 }
       )
     }
 
-    const totalValue = targetGrams * unitPrice
-
     const barge = await db.barge.create({
       data: {
-        title,
+        name,
         description,
-        productId,
         targetGrams,
-        unitPrice,
-        totalValue,
-        eventDate: new Date(eventDate)
+        pricePerGram,
+        startDate: new Date(startDate)
       },
       include: {
-        product: true,
+        bargeProducts: {
+          include: {
+            product: true
+          }
+        },
         orders: {
           include: {
             user: {

@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
               }
             },
             select: {
-              total: true,
+              totalPrice: true,
               createdAt: true
             }
           }
@@ -105,7 +105,7 @@ export async function GET(request: NextRequest) {
       name: user.name,
       phone: user.phone,
       totalOrders: user.orders.length,
-      totalSpent: user.orders.reduce((sum, order) => sum + order.total, 0),
+      totalSpent: user.orders.reduce((sum, order) => sum + order.totalPrice, 0),
       lastActivity: user.lastLoginAt || user.createdAt,
       isActive: user.isActive
     }))

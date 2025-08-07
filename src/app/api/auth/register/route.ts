@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate referral code if provided
-    let referrerUser = null
+    let referrerUser: any = null
     if (referralCode) {
       referrerUser = await db.user.findUnique({
         where: { referralCode }
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
         id: user.id,
         phone: phone, // Return original phone for immediate use
         name: name,
-        referredBy: user.referredBy
+        referredById: user.referredById
       }
     }
 

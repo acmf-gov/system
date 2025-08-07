@@ -57,14 +57,18 @@ export async function GET(request: NextRequest) {
       include: {
         barge: {
           include: {
-            product: true
+            bargeProducts: {
+              include: {
+                product: true
+              }
+            }
           }
         }
       }
     })
 
-    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0)
-    const totalGrams = orders.reduce((sum, order) => sum + order.grams, 0)
+    const totalRevenue = orders.reduce((sum, order) => sum + order.totalPrice, 0)
+    const totalGrams = orders.reduce((sum, order) => sum + order.totalGrams, 0)
     const averageOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0
     
     // Calculate conversion rate (orders per user)
@@ -91,8 +95,8 @@ export async function GET(request: NextRequest) {
           grams: 0
         }
       }
-      monthlyStats[month].revenue += order.total
-      monthlyStats[month].grams += order.grams
+      monthlyStats[month].revenue += order.totalPrice
+      monthlyStats[month].grams += order.totalGrams
       monthlyStats[month].users = new Set([...(monthlyStats[month].usersSet || []), order.userId]).size
       monthlyStats[month].barges = new Set([...(monthlyStats[month].bargesSet || []), order.bargeId]).size
     })
@@ -100,21 +104,23 @@ export async function GET(request: NextRequest) {
     // Get top products
     const productStats = {}
     orders.forEach(order => {
-      const product = order.barge.product
-      const key = `${product.name}-${product.type}`
+      const firstProduct = order.barge.bargeProducts?.[0]?.product
+      if (!firstProduct) return
+      
+      const key = `${firstProduct.name}-${firstProduct.type}`
       
       if (!productStats[key]) {
         productStats[key] = {
-          name: product.name,
-          type: product.type,
+          name: firstProduct.name,
+          type: firstProduct.type,
           totalGrams: 0,
           totalRevenue: 0,
           orders: 0
         }
       }
       
-      productStats[key].totalGrams += order.grams
-      productStats[key].totalRevenue += order.total
+      productStats[key].totalGrams += order.totalGrams
+      productStats[key].totalRevenue += order.totalPrice
       productStats[key].orders += 1
     })
 

@@ -47,7 +47,7 @@ export default function NewBargePage() {
 
       if (response.ok) {
         const data = await response.json()
-        setProducts(data.filter((p: Product) => p.isActive))
+        setProducts(data.filter((p: Product) => true)) // Remover filtro isActive até corrigir o backend
       } else {
         toast.error("Erro ao carregar produtos")
       }

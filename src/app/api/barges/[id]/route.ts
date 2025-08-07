@@ -3,15 +3,19 @@ import { db } from '@/lib/db'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     const barge = await db.barge.findUnique({
       where: { id },
       include: {
-        product: true,
+        bargeProducts: {
+          include: {
+            product: true
+          }
+        },
         orders: {
           include: {
             user: {
@@ -49,21 +53,25 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
-    const { title, description, status } = await request.json()
+    const { id } = await params
+    const { name, description, status } = await request.json()
 
     const barge = await db.barge.update({
       where: { id },
       data: {
-        ...(title && { title }),
+        ...(name && { name }),
         ...(description !== undefined && { description }),
         ...(status && { status })
       },
       include: {
-        product: true,
+        bargeProducts: {
+          include: {
+            product: true
+          }
+        },
         orders: {
           include: {
             user: {
@@ -90,14 +98,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     await db.barge.update({
       where: { id },
-      data: { isActive: false }
+      data: { status: 'cancelled' }
     })
 
     return NextResponse.json({ message: 'Barca desativada com sucesso' })

@@ -74,11 +74,19 @@ export async function GET(request: NextRequest) {
           }
         },
         include: {
-          product: true,
-          creator: {
-            select: {
-              name: true,
-              phone: true
+          bargeProducts: {
+            include: {
+              product: true
+            }
+          },
+          orders: {
+            include: {
+              user: {
+                select: {
+                  name: true,
+                  phone: true
+                }
+              }
             }
           }
         }
@@ -99,7 +107,11 @@ export async function GET(request: NextRequest) {
           },
           barge: {
             include: {
-              product: true
+              bargeProducts: {
+                include: {
+                  product: true
+                }
+              }
             }
           },
           address: true
@@ -115,7 +127,11 @@ export async function GET(request: NextRequest) {
         include: {
           barge: {
             include: {
-              product: true
+              bargeProducts: {
+                include: {
+                  product: true
+                }
+              }
             }
           }
         }
@@ -150,7 +166,7 @@ export async function GET(request: NextRequest) {
 }
 
 function generateCSV(users: any[], barges: any[], orders: any[], deliveries: any[]) {
-  const lines = []
+  const lines: string[] = []
   
   // Users section
   lines.push('RELATÓRIO DE USUÁRIOS')
@@ -171,15 +187,15 @@ function generateCSV(users: any[], barges: any[], orders: any[], deliveries: any
   
   // Barges section
   lines.push('RELATÓRIO DE BARCAS')
-  lines.push('ID,Título,Status,Produto,Tipo,Criador,Criado em')
+  lines.push('ID,Nome,Status,Preço por grama,Meta de gramas,Criado em')
   barges.forEach(barge => {
+    const firstProduct = barge.bargeProducts?.[0]?.product
     lines.push([
       barge.id,
-      barge.title,
+      barge.name,
       barge.status,
-      barge.product.name,
-      barge.product.type,
-      barge.creator.name || barge.creator.phone,
+      barge.pricePerGram,
+      barge.targetGrams,
       new Date(barge.createdAt).toLocaleDateString('pt-BR')
     ].join(','))
   })
@@ -188,14 +204,14 @@ function generateCSV(users: any[], barges: any[], orders: any[], deliveries: any
   
   // Orders section
   lines.push('RELATÓRIO DE PEDIDOS')
-  lines.push('ID,Usuário,Produto,Gramas,Total,Status,Criado em')
+  lines.push('ID,Usuário,Total de gramas,Preço total,Status,Criado em')
   orders.forEach(order => {
+    const firstProduct = order.barge.bargeProducts?.[0]?.product
     lines.push([
       order.id,
       order.user.name || order.user.phone,
-      `${order.barge.product.name} (${order.barge.product.type})`,
-      order.grams,
-      order.total,
+      order.totalGrams,
+      order.totalPrice,
       order.status,
       new Date(order.createdAt).toLocaleDateString('pt-BR')
     ].join(','))
@@ -209,9 +225,9 @@ function generateCSV(users: any[], barges: any[], orders: any[], deliveries: any
   deliveries.forEach(delivery => {
     lines.push([
       delivery.id,
-      delivery.barge.title,
+      delivery.barge.name,
       delivery.status,
-      delivery.deliveryPerson || '',
+      delivery.deliveryman || '',
       new Date(delivery.createdAt).toLocaleDateString('pt-BR'),
       delivery.deliveredAt ? new Date(delivery.deliveredAt).toLocaleDateString('pt-BR') : ''
     ].join(','))
