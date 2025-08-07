@@ -1,0 +1,78 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import { decryptUserData } from '@/lib/encryption'
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
+
+export async function POST(request: NextRequest) {
+  try {
+    const { phone, password } = await request.json()
+
+    if (!phone || !password) {
+      return NextResponse.json(
+        { error: 'Telefone e senha são obrigatórios' },
+        { status: 400 }
+      )
+    }
+
+    // Buscar usuário pelo telefone
+    const user = await db.user.findUnique({
+      where: { phone }
+    })
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Usuário não encontrado' },
+        { status: 401 }
+      )
+    }
+
+    // Verificar senha
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { error: 'Senha incorreta' },
+        { status: 401 }
+      )
+    }
+
+    // Update last login
+    await db.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() }
+    })
+
+    // Decrypt user data for response
+    const decryptedUser = decryptUserData(user)
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user.id },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    )
+
+    return NextResponse.json({
+      message: 'Login realizado com sucesso',
+      token,
+      user: {
+        id: decryptedUser.id,
+        phone: decryptedUser.phone,
+        name: decryptedUser.name,
+        email: decryptedUser.email,
+        isAdmin: decryptedUser.isAdmin,
+        isActive: decryptedUser.isActive
+      }
+    })
+
+  } catch (error) {
+    console.error('Erro no login:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

@@ -1,0 +1,388 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String   @id @default(cuid())
+  phone           String   @unique
+  password        String
+  name            String?
+  email           String?  @unique
+  avatar          String?
+  bio             String?
+  isVerified      Boolean  @default(false)
+  isAdmin         Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  lastLoginAt     DateTime?
+  referralCode    String?  @unique
+  referredBy      String?  // ID do usuário que indicou
+  referralBonus   Float    @default(0) // Bônus acumulado por indicações
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relacionamentos
+  addresses       Address[]
+  orders          Order[]
+  notifications   Notification[]
+  payments        Payment[]
+  chatMessages    ChatMessage[]
+  chatMemberships ChatMembership[]
+  deliveryRoutes  DeliveryRoute[]
+  createdBarges   Barge[]       @relation("BargeCreatorRelation")
+  createdRooms    ChatRoom[]    @relation("ChatRoomCreatorRelation")
+  referrals       User[]        @relation("UserReferralRelation")
+  referrer        User?         @relation("UserReferralRelation", fields: [referredBy], references: [id])
+  
+  @@map("users")
+}
+
+model Address {
+  id           String   @id @default(cuid())
+  street       String
+  number       String
+  complement   String?
+  neighborhood String
+  city         String
+  state        String
+  zipCode      String
+  latitude     Float?
+  longitude    Float?
+  isDefault    Boolean  @default(false)
+  userId       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders Order[]
+  
+  @@map("addresses")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  type        ProductType
+  image       String?
+  thcLevel    Float?   // Nível de THC
+  cbdLevel    Float?   // Nível de CBD
+  strain      String?  // Cepa
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  barges Barge[]
+  
+  @@map("products")
+}
+
+model Barge {
+  id            String      @id @default(cuid())
+  title         String
+  description   String?
+  productId     String
+  targetGrams   Int         // Meta em gramas
+  unitPrice     Float       // Preço por grama
+  totalValue    Float       // Valor total da barca (targetGrams * unitPrice)
+  eventDate     DateTime    // Data do evento
+  status        BargeStatus @default(ACTIVE)
+  isActive      Boolean     @default(true)
+  minParticipants Int       @default(1) // Mínimo de participantes
+  maxParticipants Int?      // Máximo de participantes
+  deliveryFee   Float       @default(0) // Taxa de entrega
+  paymentDeadline DateTime? // Prazo para pagamento
+  estimatedDelivery DateTime? // Data estimada de entrega
+  createdBy     String      // ID do usuário que criou
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Relacionamentos
+  product       Product        @relation(fields: [productId], references: [id])
+  orders        Order[]
+  notifications Notification[]
+  deliveries     Delivery[]
+  deliveryRoutes DeliveryRoute[]
+  creator       User           @relation("BargeCreatorRelation", fields: [createdBy], references: [id])
+  
+  @@map("barges")
+}
+
+model Order {
+  id           String     @id @default(cuid())
+  userId       String
+  bargeId      String
+  grams        Int        // Quantidade em gramas
+  total        Float      // Valor total (grams * unitPrice)
+  status       OrderStatus @default(PENDING)
+  addressId    String?
+  notes        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  
+  // Relacionamentos
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  barge    Barge     @relation(fields: [bargeId], references: [id], onDelete: Cascade)
+  address  Address?  @relation(fields: [addressId], references: [id])
+  
+  @@map("orders")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  userId        String
+  orderId       String?
+  amount        Float
+  method        PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  transactionId String?
+  proofUrl      String?       // URL do comprovante
+  approvedBy    String?       // ID do admin que aprovou
+  approvedAt    DateTime?
+  dueDate       DateTime?
+  paidAt        DateTime?
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  // Relacionamentos
+  user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("payments")
+}
+
+model Delivery {
+  id              String           @id @default(cuid())
+  bargeId         String
+  deliveryRouteId String?
+  status          DeliveryStatus    @default(PENDING)
+  deliveryDate    DateTime?
+  deliveredAt     DateTime?
+  deliveryPerson  String?           // Nome do entregador
+  trackingCode    String?           // Código de rastreio
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  
+  // Relacionamentos
+  barge         Barge           @relation(fields: [bargeId], references: [id], onDelete: Cascade)
+  deliveryRoute DeliveryRoute?  @relation(fields: [deliveryRouteId], references: [id])
+  
+  @@map("deliveries")
+}
+
+model DeliveryRoute {
+  id            String           @id @default(cuid())
+  name          String
+  description   String?
+  status        RouteStatus      @default(PLANNING)
+  driverId      String?          // ID do motorista
+  vehicleInfo   String?          // Informações do veículo
+  estimatedTime Int?             // Tempo estimado em minutos
+  actualTime    Int?             // Tempo real em minutos
+  totalDistance Float?           // Distância total em km
+  startDate     DateTime?
+  endDate       DateTime?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  
+  // Relacionamentos
+  barges     Barge[]
+  deliveries Delivery[]
+  driver     User?   @relation(fields: [driverId], references: [id])
+  
+  @@map("delivery_routes")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  title     String
+  message   String
+  type      NotificationType
+  userId    String?
+  bargeId   String?
+  isRead    Boolean          @default(false)
+  isPush    Boolean          @default(false)
+  pushSent  Boolean          @default(false)
+  data      Json?            // Dados adicionais
+  createdAt DateTime         @default(now())
+  
+  // Relacionamentos
+  user  User?  @relation(fields: [userId], references: [id])
+  barge Barge? @relation(fields: [bargeId], references: [id])
+  
+  @@map("notifications")
+}
+
+model ChatRoom {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  type        ChatType     @default(GROUP)
+  isPrivate   Boolean      @default(false)
+  maxMembers  Int?         // Limite de membros
+  avatar      String?
+  createdBy   String       // ID do criador
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  // Relacionamentos
+  messages  ChatMessage[]
+  members   ChatMembership[]
+  creator   User          @relation("ChatRoomCreatorRelation", fields: [createdBy], references: [id])
+  
+  @@map("chat_rooms")
+}
+
+model ChatMessage {
+  id        String           @id @default(cuid())
+  roomId    String
+  userId    String
+  content   String
+  type      MessageType      @default(TEXT)
+  fileUrl   String?          // URL do arquivo (se for mensagem de arquivo)
+  replyTo   String?          // ID da mensagem respondida
+  isEdited  Boolean          @default(false)
+  editedAt  DateTime?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  
+  // Relacionamentos
+  room    ChatRoom     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reply   ChatMessage? @relation("ChatMessageReplyRelation", fields: [replyTo], references: [id])
+  replies ChatMessage[] @relation("ChatMessageReplyRelation")
+  
+  @@map("chat_messages")
+}
+
+model ChatMembership {
+  id          String           @id @default(cuid())
+  roomId      String
+  userId      String
+  role        MemberRole       @default(MEMBER)
+  joinedAt    DateTime         @default(now())
+  lastReadAt  DateTime?
+  isMuted     Boolean          @default(false)
+  leftAt      DateTime?
+  
+  // Relacionamentos
+  room ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([roomId, userId])
+  @@map("chat_memberships")
+}
+
+// Enums
+enum ProductType {
+  GELO
+  FLOR
+  DRY
+  CONCENTRADO
+  OUTRO
+}
+
+enum BargeStatus {
+  ACTIVE      // Ativa para pedidos
+  PAYMENT     // Aguardando pagamento
+  CONFIRMED   // Confirmada e comprada
+  DELIVERING  // Saindo para entrega
+  COMPLETED   // Entregue
+  CANCELLED   // Cancelada
+  PAUSED      // Pausada temporariamente
+}
+
+enum OrderStatus {
+  PENDING    // Aguardando confirmação
+  CONFIRMED  // Confirmado na barca
+  PAID       // Pago
+  CANCELLED  // Cancelado
+  REFUNDED   // Reembolsado
+}
+
+enum PaymentMethod {
+  PIX
+  CASH
+  BANK_TRANSFER
+  CREDIT_CARD
+  DEBIT_CARD
+  CRYPTOCURRENCY
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING    // Aguardando pagamento
+  AWAITING_APPROVAL // Aguardando aprovação
+  APPROVED   // Aprovado
+  REJECTED   // Rejeitado
+  CANCELLED  // Cancelado
+  REFUNDED   // Reembolsado
+}
+
+enum DeliveryStatus {
+  PENDING      // Agendado
+  PREPARING    // Preparando
+  IN_TRANSIT   // Em trânsito
+  DELIVERED    // Entregue
+  CANCELLED    // Cancelado
+  RETURNED     // Devolvido
+}
+
+enum RouteStatus {
+  PLANNING    // Planejando
+  ACTIVE      // Ativo
+  COMPLETED   // Completo
+  CANCELLED   // Cancelado
+}
+
+enum NotificationType {
+  PAYMENT_REMINDER
+  DELIVERY_NOTIFICATION
+  BARGE_COMPLETED
+  BARGE_CANCELLED
+  ORDER_CONFIRMED
+  ORDER_CANCELLED
+  PAYMENT_APPROVED
+  PAYMENT_REJECTED
+  DELIVERY_OUT_FOR_DELIVERY
+  DELIVERY_DELIVERED
+  NEW_MESSAGE
+  BARGE_STARTING
+  BARGE_PAUSED
+  GENERAL
+}
+
+enum ChatType {
+  PRIVATE    // Chat entre 2 pessoas
+  GROUP      // Chat em grupo
+  COMMUNITY  // Chat da comunidade (público)
+  BARGE      // Chat específico da barca
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+  FILE
+  SYSTEM
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MODERATOR
+  MEMBER
+}

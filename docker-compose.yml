@@ -1,0 +1,73 @@
+# 🚤 Docker Compose para Barca Coletiva - Easy Panel
+version: '3.8'
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: barca-coletiva-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://barca:barca123@db:5432/barca_coletiva
+      - NEXTAUTH_SECRET=your-super-secret-key-change-this-in-production
+      - NEXTAUTH_URL=http://localhost:3000
+      - JWT_SECRET=your-jwt-secret-key-change-this-in-production
+      - ENCRYPTION_KEY=your-32-byte-encryption-key-change-this
+      - SOCKET_IO_CORS_ORIGIN=http://localhost:3000
+      - ZAI_API_KEY=your-z-ai-api-key
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - barca-network
+    volumes:
+      - ./logs:/app/logs
+
+  db:
+    image: postgres:15-alpine
+    container_name: barca-coletiva-db
+    environment:
+      - POSTGRES_DB=barca_coletiva
+      - POSTGRES_USER=barca
+      - POSTGRES_PASSWORD=barca123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - barca-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U barca -d barca_coletiva"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Servidor Nginx (opcional)
+  nginx:
+    image: nginx:alpine
+    container_name: barca-coletiva-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - barca-network
+
+volumes:
+  postgres_data:
+
+networks:
+  barca-network:
+    driver: bridge
