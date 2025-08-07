@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { decryptUserData, encrypt } from '@/lib/encryption'
 
+interface User {
+  id: string
+  phone: string | null
+  name: string | null
+  isActive: boolean
+  isAdmin: boolean
+  createdAt: Date
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -20,7 +29,7 @@ export async function GET(request: NextRequest) {
     })
 
     let encryptedPhone: string | null = null
-    let userByEncryptedPhone = null
+    let userByEncryptedPhone: User | null = null
 
     // Tentar buscar por telefone criptografado
     if (!user) {
@@ -28,7 +37,7 @@ export async function GET(request: NextRequest) {
         encryptedPhone = encrypt(phone)
         userByEncryptedPhone = await db.user.findUnique({
           where: { phone: encryptedPhone }
-        })
+        }) as User | null
       } catch (error) {
         console.error('Erro ao criptografar telefone:', error)
       }
@@ -100,7 +109,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Erro no debug:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor', details: error.message },
+      { error: 'Erro interno do servidor', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }
