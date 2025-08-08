@@ -121,16 +121,24 @@ const server = http.createServer(async (req, res) => {
             <div id="message"></div>
             
             <div style="margin: 2rem 0;">
-              <h3>Teste de Login:</h3>
+              <button onclick="goToLogin()" class="btn">🚀 Entrar no Sistema</button>
+            </div>
+            
+            <div style="margin: 2rem 0; padding: 1rem; background: #f5f5f5; border-radius: 8px;">
+              <h4>Área de Teste (Desenvolvedores):</h4>
               <input type="text" id="phone" placeholder="Telefone (admin)" style="width: 100%; padding: 0.5rem; margin: 0.5rem 0; border: 1px solid #ddd; border-radius: 5px;">
               <input type="password" id="password" placeholder="Senha (@Wad235rt)" style="width: 100%; padding: 0.5rem; margin: 0.5rem 0; border: 1px solid #ddd; border-radius: 5px;">
-              <button onclick="testLogin()" class="btn">Testar Login</button>
+              <button onclick="testLogin()" class="btn">Testar Login API</button>
             </div>
             
             <a href="/status" class="btn">Ver Status do Sistema</a>
           </div>
 
           <script>
+            function goToLogin() {
+              window.location.href = '/login?demo=true';
+            }
+            
             async function testLogin() {
               const phone = document.getElementById('phone').value;
               const password = document.getElementById('password').value;
@@ -158,6 +166,209 @@ const server = http.createServer(async (req, res) => {
             }
           </script>
         </body>
+      </html>
+    `);
+  } else if (req.url === '/login') {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(`
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>🚤 Barca Coletiva - Login</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+          <style>
+              body {
+                  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                  margin: 0;
+                  padding: 0;
+                  min-height: 100vh;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+              }
+              .login-container {
+                  background: white;
+                  padding: 2rem;
+                  border-radius: 15px;
+                  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                  width: 100%;
+                  max-width: 400px;
+              }
+              .logo {
+                  text-align: center;
+                  margin-bottom: 2rem;
+              }
+              .logo h1 {
+                  font-size: 2rem;
+                  margin: 0;
+                  color: #333;
+              }
+              .logo p {
+                  color: #666;
+                  margin: 0.5rem 0 0 0;
+                  font-size: 0.9rem;
+              }
+              .form-group {
+                  margin-bottom: 1.5rem;
+              }
+              .form-group label {
+                  display: block;
+                  margin-bottom: 0.5rem;
+                  font-weight: 600;
+                  color: #333;
+              }
+              .form-group input {
+                  width: 100%;
+                  padding: 0.8rem;
+                  border: 2px solid #e1e5e9;
+                  border-radius: 8px;
+                  font-size: 1rem;
+                  transition: border-color 0.3s;
+              }
+              .form-group input:focus {
+                  outline: none;
+                  border-color: #667eea;
+              }
+              .login-btn {
+                  width: 100%;
+                  background: #667eea;
+                  color: white;
+                  padding: 0.8rem;
+                  border: none;
+                  border-radius: 8px;
+                  font-size: 1rem;
+                  font-weight: 600;
+                  cursor: pointer;
+                  transition: background 0.3s;
+              }
+              .login-btn:hover {
+                  background: #5a6fd8;
+              }
+              .login-btn:disabled {
+                  background: #ccc;
+                  cursor: not-allowed;
+              }
+              .error-message {
+                  background: #fee;
+                  color: #c33;
+                  padding: 0.8rem;
+                  border-radius: 8px;
+                  margin-bottom: 1rem;
+                  border-left: 4px solid #c33;
+              }
+              .success-message {
+                  background: #efe;
+                  color: #3c3;
+                  padding: 0.8rem;
+                  border-radius: 8px;
+                  margin-bottom: 1rem;
+                  border-left: 4px solid #3c3;
+              }
+              .back-link {
+                  text-align: center;
+                  margin-top: 1rem;
+              }
+              .back-link a {
+                  color: #667eea;
+                  text-decoration: none;
+                  font-weight: 500;
+              }
+              .back-link a:hover {
+                  text-decoration: underline;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="login-container">
+              <div class="logo">
+                  <h1>🚤 Barca Coletiva</h1>
+                  <p>Sistema de compras coletivas de produtos canábicos</p>
+              </div>
+              
+              <div id="message-container"></div>
+              
+              <form id="login-form">
+                  <div class="form-group">
+                      <label for="phone">Telefone:</label>
+                      <input type="text" id="phone" name="phone" placeholder="Digite seu telefone" required>
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="password">Senha:</label>
+                      <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                  </div>
+                  
+                  <button type="submit" class="login-btn" id="login-btn">
+                      Entrar no Sistema
+                  </button>
+              </form>
+              
+              <div class="back-link">
+                  <a href="/">← Voltar para a página inicial</a>
+              </div>
+          </div>
+
+          <script>
+              document.getElementById('login-form').addEventListener('submit', async function(e) {
+                  e.preventDefault();
+                  
+                  const phone = document.getElementById('phone').value;
+                  const password = document.getElementById('password').value;
+                  const loginBtn = document.getElementById('login-btn');
+                  const messageContainer = document.getElementById('message-container');
+                  
+                  // Desabilitar botão e mostrar loading
+                  loginBtn.disabled = true;
+                  loginBtn.textContent = 'Entrando...';
+                  messageContainer.innerHTML = '';
+                  
+                  try {
+                      const response = await fetch('/api/auth/login', {
+                          method: 'POST',
+                          headers: {
+                              'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({ phone, password })
+                      });
+                      
+                      const data = await response.json();
+                      
+                      if (response.ok) {
+                          // Login successful
+                          messageContainer.innerHTML = '<div class="success-message">✅ Login realizado com sucesso! Redirecionando...</div>';
+                          
+                          // Salvar token no localStorage
+                          localStorage.setItem('authToken', data.token);
+                          localStorage.setItem('user', JSON.stringify(data.user));
+                          
+                          // Redirecionar para a página principal após 2 segundos
+                          setTimeout(() => {
+                              window.location.href = '/';
+                          }, 2000);
+                      } else {
+                          // Login failed
+                          messageContainer.innerHTML = '<div class="error-message">❌ Erro: ' + (data.error || 'Credenciais inválidas') + '</div>';
+                      }
+                  } catch (error) {
+                      messageContainer.innerHTML = '<div class="error-message">❌ Erro de conexão: ' + error.message + '</div>';
+                  } finally {
+                      // Reabilitar botão
+                      loginBtn.disabled = false;
+                      loginBtn.textContent = 'Entrar no Sistema';
+                  }
+              });
+              
+              // Preencher campos de teste se vier da página principal
+              const urlParams = new URLSearchParams(window.location.search);
+              if (urlParams.get('demo') === 'true') {
+                  document.getElementById('phone').value = 'admin';
+                  document.getElementById('password').value = '@Wad235rt';
+              }
+          </script>
+      </body>
       </html>
     `);
   } else if (req.url === '/demo') {
