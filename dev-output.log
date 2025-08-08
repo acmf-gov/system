@@ -22,3 +22,165 @@
  GET / 200 in 102ms
  GET / 200 in 130ms
  GET / 200 in 93ms
+ GET / 200 in 90ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app-paths-manifest.json',
+  page: '/'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1775ms (1098 modules)
+ GET / 500 in 2606ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 766ms (1059 modules)
+ GET / 404 in 1163ms
+ GET /_next/static/css/app/layout.css?v=1754667895829 404 in 26ms
+ GET /_next/static/chunks/main-app.js?v=1754667895829 404 in 33ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 30ms
+ GET /_next/static/chunks/app/layout.js 404 in 37ms
+ GET / 200 in 369ms
+ GET /_next/static/css/app/layout.css?v=1754667941698 404 in 30ms
+ GET /_next/static/chunks/main-app.js?v=1754667941698 404 in 96ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 62ms
+ GET /_next/static/chunks/app/layout.js 404 in 33ms
+ GET /_next/static/chunks/app/page.js 404 in 28ms
+ GET / 200 in 133ms
+ GET /_next/static/css/app/layout.css?v=1754667945732 404 in 29ms
+ GET /_next/static/chunks/main-app.js?v=1754667945732 404 in 23ms
+ GET /_next/static/chunks/app/layout.js 404 in 34ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 24ms
+ GET /_next/static/chunks/app/page.js 404 in 25ms
+ GET / 200 in 95ms
+ GET /_next/static/css/app/layout.css?v=1754667951526 404 in 22ms
+ GET /_next/static/chunks/main-app.js?v=1754667951526 404 in 24ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 24ms
+ GET /_next/static/chunks/app/layout.js 404 in 25ms
+ GET /_next/static/chunks/app/page.js 404 in 32ms
+ GET / 200 in 92ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 4.5s (1102 modules)
+ GET /_next/static/css/app/layout.css?v=1754667969863 500 in 9821ms
+ GET /_next/static/chunks/webpack.js?v=1754667969863 500 in 9447ms
+ GET /_next/static/chunks/app-pages-internals.js 500 in 9310ms
+ GET /_next/static/chunks/main-app.js?v=1754667969863 500 in 9428ms
+ GET /_next/static/chunks/app/layout.js 500 in 8552ms
+ GET /_next/static/chunks/app/page.js 500 in 8561ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app/page.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app/page.js',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/pages/_document.js'
+}
+ GET / 500 in 909ms
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz'
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app/page.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app/page.js',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/pages/_document.js'
+}
+ GET / 500 in 201ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app-paths-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/pages-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/pages-manifest.json'
+}
+ GET / 500 in 146ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+}
+ GET /_next/static/chunks/fallback/webpack.js 500 in 259ms
+ GET /_next/static/chunks/fallback/main.js 500 in 258ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+}
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 274ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 272ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+}
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 296ms

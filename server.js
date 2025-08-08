@@ -4,9 +4,9 @@ const next = require('next');
 const { Server } = require('socket.io');
 const { PrismaClient } = require('@prisma/client');
 
-const dev = true; // Forçar modo de desenvolvimento
+const dev = process.env.NODE_ENV !== 'production'; // Detectar ambiente automaticamente
 const hostname = '0.0.0.0'; // Permitir acesso externo
-const port = process.env.PORT || 8081; // Usar porta diferente
+const port = process.env.PORT || 3000; // Usar porta 3000
 
 console.log('🚤 Iniciando Barca Coletiva Server...');
 console.log('📋 Configuração:');
