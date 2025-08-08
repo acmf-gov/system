@@ -1,0 +1,10 @@
+
+> barca-coletiva@1.0.0 start
+> NODE_ENV=production node server.js
+
+🚤 Iniciando Barca Coletiva Server...
+📋 Configuração:
+   - Modo: Desenvolvimento
+   - Hostname: 0.0.0.0
+   - Porta: 3000
+   - NODE_ENV: production

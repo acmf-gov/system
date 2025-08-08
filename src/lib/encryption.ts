@@ -2,6 +2,11 @@ import CryptoJS from 'crypto-js'
 
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'your-256-bit-secret-key-here'
 
+// Ensure we have a valid encryption key
+if (!ENCRYPTION_KEY || ENCRYPTION_KEY === 'your-256-bit-secret-key-here') {
+  throw new Error('ENCRYPTION_KEY environment variable is not set or is using default value')
+}
+
 // Encrypt data
 export const encrypt = (data: string): string => {
   try {

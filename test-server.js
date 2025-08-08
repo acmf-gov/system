@@ -1,14 +1,28 @@
 const http = require('http');
+const next = require('next');
 
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Hello World!\n');
-});
+const dev = true;
+const hostname = 'localhost';
+const port = 3000;
 
-server.listen(3000, '0.0.0.0', () => {
-  console.log('Server running at http://0.0.0.0:3000/');
-  setTimeout(() => {
-    server.close();
-    console.log('Server closed');
-  }, 2000);
+console.log('🚤 Iniciando servidor de teste...');
+
+const app = next({ dev, hostname, port });
+const handler = app.getRequestHandler();
+
+app.prepare().then(() => {
+  const server = http.createServer(async (req, res) => {
+    try {
+      await handler(req, res);
+    } catch (err) {
+      console.error('Error occurred handling', req.url, err);
+      res.statusCode = 500;
+      res.end('internal server error');
+    }
+  });
+
+  server.listen(port, () => {
+    console.log('🚀 Servidor de teste iniciado com sucesso!');
+    console.log('🌐 Acessar: http://localhost:' + port);
+  });
 });

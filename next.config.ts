@@ -13,7 +13,7 @@ const nextConfig = {
     return config;
   },
   // Configuração para produção
-  output: 'standalone',
+  // output: 'standalone', // Comentado para evitar problemas de build
   // Configuração para Socket.IO
   async rewrites() {
     return [
