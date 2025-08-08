@@ -1,4 +1,6 @@
-// 🚤 Barca Coletiva - Schema do Banco de Dados
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,263 +11,78 @@ datasource db {
 }
 
 model User {
-  id              String   @id @default(cuid())
-  phone           String?  @unique
-  phoneEncrypted  String?
-  phoneHash       String?  @unique
-  password        String
-  name            String?
-  email           String?  @unique
-  avatar          String?
-  bio             String?
-  isVerified      Boolean  @default(false)
-  isAdmin         Boolean  @default(false)
-  isActive        Boolean  @default(true)
-  lastLoginAt     DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  // Relacionamentos
-  addresses       Address[]
-  orders          Order[]
-  payments        Payment[]
-  deliveries      Delivery[]
-  notifications   Notification[]
-  chatMembers     ChatMember[]
-  chatMessages    ChatMessage[]
-  referredBy      User?    @relation("UserReferrals", fields: [referredById], references: [id])
-  referredUsers    User[]   @relation("UserReferrals")
-  referralCode    String?  @unique
-  referredById    String?
-  referralBonus   Float    @default(0.0)
-
+  id         String   @id @default(cuid())
+  email      String   @unique
+  name       String?
+  password   String
+  isAdmin    Boolean  @default(false)
+  publicKey  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  // Relations
+  orders     Order[]
+  messages   Message[]
+  
   @@map("users")
 }
 
-model Address {
-  id          String   @id @default(cuid())
-  userId      String
-  street      String
-  number      String
-  neighborhood String
-  city        String
-  state       String
-  zipCode     String
-  complement  String?
-  isDefault   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relacionamentos
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  deliveries  Delivery[]
-  orders      Order[]
-
-  @@map("addresses")
-}
-
-model Product {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  type        String   // 'gelo', 'flor', 'dry'
-  pricePerGram Float
-  stock       Float
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relacionamentos
-  orderItems  OrderItem[]
-  bargeProducts BargeProduct[]
-
-  @@map("products")
-}
-
-model Barge {
-  id            String    @id @default(cuid())
-  name          String
-  description   String?
-  targetGrams   Float
-  currentGrams  Float     @default(0)
-  pricePerGram  Float
-  status        String    @default("active") // 'active', 'completed', 'cancelled'
-  startDate     DateTime
-  endDate       DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  // Relacionamentos
-  orders        Order[]
-  bargeProducts BargeProduct[]
-  deliveries    Delivery[]
-
-  @@map("barges")
+model Barca {
+  id                   String   @id @default(cuid())
+  name                 String
+  type                 String
+  pricePerGram         Decimal  @db.Decimal(10, 2)
+  targetQuantityGrams  Int
+  totalOrderedGrams    Int      @default(0)
+  status               BarcaStatus @default(OPEN)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  
+  // Relations
+  orders               Order[]
+  messages             Message[]
+  
+  @@map("barcas")
 }
 
 model Order {
-  id          String      @id @default(cuid())
-  userId      String
-  bargeId     String
-  addressId   String
-  totalGrams  Float
-  totalPrice  Float
-  status      String      @default("pending") // 'pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'
-  notes       String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  // Relacionamentos
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  barge       Barge       @relation(fields: [bargeId], references: [id], onDelete: Cascade)
-  address     Address     @relation(fields: [addressId], references: [id], onDelete: Cascade)
-  orderItems  OrderItem[]
-  payments    Payment[]
-  deliveries  Delivery[]
-  notifications Notification[] @relation("OrderNotifications")
-
+  id          String   @id @default(cuid())
+  barcaId     String
+  userId      String?
+  quantityGrams Int
+  clientName  String
+  phone       String
+  address     String
+  neighborhood String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  barca       Barca    @relation(fields: [barcaId], references: [id], onDelete: Cascade)
+  user        User?    @relation(fields: [userId], references: [id])
+  
   @@map("orders")
 }
 
-model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  grams     Float
-  price     Float
-  createdAt DateTime @default(now())
-
-  // Relacionamentos
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@map("order_items")
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  barcaId    String?
+  ciphertext String   @db.LongText
+  nonce      String
+  meta       Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  // Relations
+  sender     User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  barca      Barca?   @relation(fields: [barcaId], references: [id], onDelete: Cascade)
+  
+  @@map("messages")
 }
 
-model Payment {
-  id          String   @id @default(cuid())
-  orderId     String
-  userId      String
-  amount      Float
-  method      String   // 'pix', 'credit_card', 'cash', 'transfer'
-  status      String   @default("pending") // 'pending', 'confirmed', 'failed', 'refunded'
-  transactionId String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relacionamentos
-  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  notifications Notification[] @relation("PaymentNotifications")
-
-  @@map("payments")
-}
-
-model Delivery {
-  id          String   @id @default(cuid())
-  orderId     String
-  userId      String
-  addressId   String
-  bargeId     String
-  status      String   @default("pending") // 'pending', 'confirmed', 'preparing', 'on_the_way', 'delivered', 'cancelled'
-  deliveryman String?
-  notes       String?
-  estimatedTime DateTime?
-  deliveredAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relacionamentos
-  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  address     Address   @relation(fields: [addressId], references: [id], onDelete: Cascade)
-  barge       Barge    @relation(fields: [bargeId], references: [id], onDelete: Cascade)
-  notifications Notification[] @relation("DeliveryNotifications")
-
-  @@map("deliveries")
-}
-
-model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  type      String   // 'order', 'payment', 'delivery', 'system', 'chat'
-  title     String
-  message   String
-  isRead    Boolean  @default(false)
-  data      Json?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  order     Order?   @relation("OrderNotifications", fields: [orderId], references: [id], onDelete: Cascade)
-  payment   Payment? @relation("PaymentNotifications", fields: [paymentId], references: [id], onDelete: Cascade)
-  delivery  Delivery? @relation("DeliveryNotifications", fields: [deliveryId], references: [id], onDelete: Cascade)
-  orderId   String?
-  paymentId String?
-  deliveryId String?
-
-  @@map("notifications")
-}
-
-model ChatRoom {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  isPrivate   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relacionamentos
-  members     ChatMember[]
-  messages    ChatMessage[]
-
-  @@map("chat_rooms")
-}
-
-model ChatMember {
-  id       String   @id @default(cuid())
-  roomId   String
-  userId   String
-  joinedAt DateTime @default(now())
-
-  // Relacionamentos
-  room     ChatRoom  @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([roomId, userId])
-  @@map("chat_members")
-}
-
-model ChatMessage {
-  id        String   @id @default(cuid())
-  roomId   String
-  userId    String
-  message   String
-  isRead    Boolean  @default(false)
-  readAt    DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  room      ChatRoom  @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("chat_messages")
-}
-
-model BargeProduct {
-  id        String   @id @default(cuid())
-  bargeId   String
-  productId String
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relacionamentos
-  barge     Barge    @relation(fields: [bargeId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@unique([bargeId, productId])
-  @@map("barge_products")
+enum BarcaStatus {
+  OPEN
+  CLOSED
+  COMPLETED
 }

@@ -1,5 +1,6 @@
 // server.ts - Next.js Standalone + Socket.IO
 import { setupSocket } from '@/lib/socket';
+import { setSocketServer } from '@/app/api/messages/route';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import next from 'next';
@@ -41,6 +42,9 @@ async function createCustomServer() {
     });
 
     setupSocket(io);
+    
+    // Set socket server instance for API routes
+    setSocketServer(io);
 
     // Start the server
     server.listen(currentPort, hostname, () => {

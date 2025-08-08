@@ -1,32 +1,25 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  images: {
-    domains: ['localhost'],
-    unoptimized: true,
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+  typescript: {
+    ignoreBuildErrors: true,
   },
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ['@svgr/webpack'],
-    });
+  // 禁用 Next.js 热重载，由 nodemon 处理重编译
+  reactStrictMode: false,
+  webpack: (config, { dev }) => {
+    if (dev) {
+      // 禁用 webpack 的热模块替换
+      config.watchOptions = {
+        ignored: ['**/*'], // 忽略所有文件变化
+      };
+    }
     return config;
   },
-  // Configuração para produção
-  // output: 'standalone', // Comentado para evitar problemas de build
-  // Configuração para Socket.IO
-  async rewrites() {
-    return [
-      {
-        source: '/socket.io/:path*',
-        destination: 'http://localhost:3000/socket.io/:path*',
-      },
-    ];
-  },
-  // Configuração para ambiente de produção
-  env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
+  eslint: {
+    // 构建时忽略ESLint错误
+    ignoreDuringBuilds: true,
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

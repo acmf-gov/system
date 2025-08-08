@@ -1,58 +1,47 @@
-# 🚤 Docker Compose para Barca Coletiva - Easy Panel
 version: '3.8'
 
 services:
+  # MySQL Database
+  system_db-cu:
+    image: mysql:8.0
+    container_name: system_db-cu
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: system
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: 5952271568d18b127edb
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - barcas_network
+
+  # Next.js Application
   app:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    container_name: barca-coletiva-app
+    build: .
+    container_name: barcas_app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: mysql://mysql:5952271568d18b127edb@system_db-cu:3306/system
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: your-nextauth-secret-here
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - DATABASE_URL=postgresql://barca:barca123@db:5432/barca_coletiva
-      - NEXTAUTH_SECRET=your-super-secret-key-change-this-in-production
-      - NEXTAUTH_URL=http://localhost:3000
-      - JWT_SECRET=your-jwt-secret-key-change-this-in-production
-      - ENCRYPTION_KEY=your-32-byte-encryption-key-change-this
-      - SOCKET_IO_CORS_ORIGIN=http://localhost:3000
-      - ZAI_API_KEY=your-z-ai-api-key
     depends_on:
-      db:
-        condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - barca-network
+      - system_db-cu
     volumes:
-      - ./logs:/app/logs
-
-  db:
-    image: postgres:15-alpine
-    container_name: barca-coletiva-db
-    environment:
-      - POSTGRES_DB=barca_coletiva
-      - POSTGRES_USER=barca
-      - POSTGRES_PASSWORD=barca123
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "5432:5432"
-    restart: unless-stopped
+      - ./uploads:/app/uploads
     networks:
-      - barca-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U barca -d barca_coletiva"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - barcas_network
 
-  # Servidor Nginx (opcional)
-  nginx:
+  # Nginx Web Server (optional, for production)
+  webserver:
     image: nginx:alpine
-    container_name: barca-coletiva-nginx
+    container_name: barcas_nginx
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
@@ -61,13 +50,12 @@ services:
       - ./ssl:/etc/nginx/ssl
     depends_on:
       - app
-    restart: unless-stopped
     networks:
-      - barca-network
+      - barcas_network
 
 volumes:
-  postgres_data:
+  mysql_data:
 
 networks:
-  barca-network:
+  barcas_network:
     driver: bridge
