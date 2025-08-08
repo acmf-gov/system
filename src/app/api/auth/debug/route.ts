@@ -62,13 +62,14 @@ export async function GET(request: NextRequest) {
         const decrypted = decryptUserData(u)
         return {
           id: decrypted.id,
-          phone: decrypted.phone,
-          name: decrypted.name,
+          phone: decrypted.phone || u.phone,
+          name: decrypted.name || u.name,
           isActive: decrypted.isActive,
           isAdmin: decrypted.isAdmin,
           createdAt: decrypted.createdAt
         }
       } catch (error) {
+        console.warn('Decryption error for user:', u.id, error)
         return {
           id: u.id,
           phone: u.phone,

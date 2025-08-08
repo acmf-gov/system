@@ -64,7 +64,13 @@ export async function POST(request: NextRequest) {
     })
 
     // Decrypt user data for response
-    const decryptedUser = decryptUserData(user)
+    let decryptedUser
+    try {
+      decryptedUser = decryptUserData(user)
+    } catch (error) {
+      console.warn('Failed to decrypt user data, using original data')
+      decryptedUser = user
+    }
 
     // Generate JWT token
     const token = jwt.sign(
@@ -78,9 +84,9 @@ export async function POST(request: NextRequest) {
       token,
       user: {
         id: decryptedUser.id,
-        phone: decryptedUser.phone,
-        name: decryptedUser.name,
-        email: decryptedUser.email,
+        phone: decryptedUser.phone || user.phone,
+        name: decryptedUser.name || user.name,
+        email: decryptedUser.email || user.email,
         isAdmin: decryptedUser.isAdmin,
         isActive: decryptedUser.isActive
       }

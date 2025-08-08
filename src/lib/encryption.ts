@@ -5,7 +5,16 @@ const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'your-256-bit-secret-key-he
 // Encrypt data
 export const encrypt = (data: string): string => {
   try {
+    if (!data || data.length === 0) {
+      throw new Error('Data to encrypt is empty')
+    }
+    
     const encrypted = CryptoJS.AES.encrypt(data, ENCRYPTION_KEY).toString()
+    
+    if (!encrypted || encrypted.length === 0) {
+      throw new Error('Encryption failed - empty result')
+    }
+    
     return encrypted
   } catch (error) {
     console.error('Encryption error:', error)
@@ -18,6 +27,12 @@ export const decrypt = (encryptedData: string): string => {
   try {
     const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY)
     const decrypted = bytes.toString(CryptoJS.enc.Utf8)
+    
+    // Check if decrypted data is valid
+    if (!decrypted || decrypted.length === 0) {
+      throw new Error('Decrypted data is empty')
+    }
+    
     return decrypted
   } catch (error) {
     console.error('Decryption error:', error)
@@ -74,9 +89,16 @@ export const decryptUserData = (encryptedData: any): any => {
   // Decrypt phone from encrypted field
   if (decryptedData.phoneEncrypted) {
     try {
-      decryptedData.phone = decrypt(decryptedData.phoneEncrypted)
+      const decryptedPhone = decrypt(decryptedData.phoneEncrypted)
+      if (decryptedPhone && decryptedPhone.length > 0) {
+        decryptedData.phone = decryptedPhone
+      }
     } catch (error) {
       console.warn('Failed to decrypt phone, keeping original')
+      // Keep the original phone if decryption fails
+      if (decryptedData.phone) {
+        decryptedData.phone = decryptedData.phone
+      }
     }
   }
   
@@ -85,9 +107,13 @@ export const decryptUserData = (encryptedData: any): any => {
   otherSensitiveFields.forEach(field => {
     if (decryptedData[field]) {
       try {
-        decryptedData[field] = decrypt(decryptedData[field])
+        const decryptedField = decrypt(decryptedData[field])
+        if (decryptedField && decryptedField.length > 0) {
+          decryptedData[field] = decryptedField
+        }
       } catch (error) {
         console.warn(`Failed to decrypt ${field}, keeping original`)
+        // Keep the original field if decryption fails
       }
     }
   })
