@@ -1092,7 +1092,7 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-const PORT = 3002;
+const PORT = 3000;
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
   console.log('📊 Health check: http://localhost:' + PORT + '/api/health');
