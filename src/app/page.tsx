@@ -101,6 +101,20 @@ export default function Home() {
               >
                 Voltar
               </Button>
+              
+              <div className="text-center text-sm text-gray-600">
+                Não tem uma conta?{" "}
+                <a 
+                  href="/register" 
+                  className="text-blue-600 hover:underline"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    window.location.href = "/register"
+                  }}
+                >
+                  Cadastre-se aqui
+                </a>
+              </div>
             </form>
           </CardContent>
         </Card>
@@ -125,6 +139,20 @@ export default function Home() {
           >
             Entrar no Sistema
           </Button>
+          
+          <div className="text-center text-sm text-gray-600">
+            Não tem uma conta?{" "}
+            <a 
+              href="/register" 
+              className="text-blue-600 hover:underline"
+              onClick={(e) => {
+                e.preventDefault()
+                window.location.href = "/register"
+              }}
+            >
+              Cadastre-se aqui
+            </a>
+          </div>
         </CardContent>
       </Card>
     </div>
