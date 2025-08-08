@@ -7,180 +7,88 @@
 [33m[nodemon] watching path(s): server.ts src/**/*[39m
 [33m[nodemon] watching extensions: ts,tsx,js,jsx[39m
 [32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
 > Ready on http://0.0.0.0:3000
 > Socket.IO server running at ws://0.0.0.0:3000/api/socketio
+ ○ Compiling /api/addresses ...
+ ✓ Compiled /api/addresses in 1227ms (365 modules)
+prisma:query BEGIN
+prisma:query INSERT INTO `dbcenter`.`addresses` (`id`,`userId`,`street`,`number`,`neighborhood`,`city`,`state`,`zipCode`,`complement`,`isDefault`,`createdAt`,`updatedAt`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+prisma:query SELECT `dbcenter`.`addresses`.`id`, `dbcenter`.`addresses`.`userId`, `dbcenter`.`addresses`.`street`, `dbcenter`.`addresses`.`number`, `dbcenter`.`addresses`.`neighborhood`, `dbcenter`.`addresses`.`city`, `dbcenter`.`addresses`.`state`, `dbcenter`.`addresses`.`zipCode`, `dbcenter`.`addresses`.`complement`, `dbcenter`.`addresses`.`isDefault`, `dbcenter`.`addresses`.`createdAt`, `dbcenter`.`addresses`.`updatedAt` FROM `dbcenter`.`addresses` WHERE `dbcenter`.`addresses`.`id` = ? LIMIT ? OFFSET ?
+prisma:query COMMIT
+ POST /api/addresses 200 in 4027ms
  ○ Compiling / ...
- ✓ Compiled / in 5.2s (772 modules)
- GET / 200 in 6899ms
- ✓ Compiled in 1628ms (359 modules)
- ✓ Compiled in 232ms (345 modules)
- GET / 200 in 99ms
- GET / 200 in 111ms
- GET / 200 in 215ms
- GET / 200 in 88ms
- GET / 200 in 97ms
- GET / 200 in 102ms
- GET / 200 in 130ms
- GET / 200 in 93ms
- GET / 200 in 90ms
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app-paths-manifest.json',
-  page: '/'
+ ✓ Compiled / in 2.5s (793 modules)
+prisma:query SELECT `dbcenter`.`addresses`.`id`, `dbcenter`.`addresses`.`userId`, `dbcenter`.`addresses`.`street`, `dbcenter`.`addresses`.`number`, `dbcenter`.`addresses`.`neighborhood`, `dbcenter`.`addresses`.`city`, `dbcenter`.`addresses`.`state`, `dbcenter`.`addresses`.`zipCode`, `dbcenter`.`addresses`.`complement`, `dbcenter`.`addresses`.`isDefault`, `dbcenter`.`addresses`.`createdAt`, `dbcenter`.`addresses`.`updatedAt` FROM `dbcenter`.`addresses` WHERE `dbcenter`.`addresses`.`userId` = ? ORDER BY `dbcenter`.`addresses`.`createdAt` DESC
+ GET /api/addresses 200 in 1636ms
+ ✓ Compiled in 1310ms (360 modules)
+ GET / 200 in 3822ms
+ GET / 200 in 159ms
+ ○ Compiling /api/chat/rooms ...
+ ✓ Compiled /api/chat/rooms in 851ms (781 modules)
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query INSERT INTO `dbcenter`.`chat_rooms` (`id`,`name`,`description`,`isPrivate`,`createdAt`,`updatedAt`) VALUES (?,?,?,?,?,?)
+prisma:query SELECT `dbcenter`.`chat_rooms`.`id`, `dbcenter`.`chat_rooms`.`name`, `dbcenter`.`chat_rooms`.`description`, `dbcenter`.`chat_rooms`.`isPrivate`, `dbcenter`.`chat_rooms`.`createdAt`, `dbcenter`.`chat_rooms`.`updatedAt`, COALESCE(`aggr_selection_0_ChatMember`.`_aggr_count_members`, 0) AS `_aggr_count_members`, COALESCE(`aggr_selection_1_ChatMessage`.`_aggr_count_messages`, 0) AS `_aggr_count_messages` FROM `dbcenter`.`chat_rooms` LEFT JOIN (SELECT `dbcenter`.`chat_members`.`roomId`, COUNT(*) AS `_aggr_count_members` FROM `dbcenter`.`chat_members` WHERE 1=1 GROUP BY `dbcenter`.`chat_members`.`roomId`) AS `aggr_selection_0_ChatMember` ON (`dbcenter`.`chat_rooms`.`id` = `aggr_selection_0_ChatMember`.`roomId`) LEFT JOIN (SELECT `dbcenter`.`chat_messages`.`roomId`, COUNT(*) AS `_aggr_count_messages` FROM `dbcenter`.`chat_messages` WHERE 1=1 GROUP BY `dbcenter`.`chat_messages`.`roomId`) AS `aggr_selection_1_ChatMessage` ON (`dbcenter`.`chat_rooms`.`id` = `aggr_selection_1_ChatMessage`.`roomId`) WHERE `dbcenter`.`chat_rooms`.`id` = ? LIMIT ? OFFSET ?
+prisma:query SELECT `dbcenter`.`chat_members`.`id`, `dbcenter`.`chat_members`.`roomId`, `dbcenter`.`chat_members`.`userId`, `dbcenter`.`chat_members`.`joinedAt` FROM `dbcenter`.`chat_members` WHERE `dbcenter`.`chat_members`.`roomId` IN (?)
+prisma:query COMMIT
+ POST /api/chat/rooms 200 in 2971ms
+ ✓ Compiled in 783ms (360 modules)
+ GET / 200 in 204ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
 }
- ○ Compiling /_error ...
- ✓ Compiled /_error in 1775ms (1098 modules)
- GET / 500 in 2606ms
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 766ms (1059 modules)
- GET / 404 in 1163ms
- GET /_next/static/css/app/layout.css?v=1754667895829 404 in 26ms
- GET /_next/static/chunks/main-app.js?v=1754667895829 404 in 33ms
- GET /_next/static/chunks/app-pages-internals.js 404 in 30ms
- GET /_next/static/chunks/app/layout.js 404 in 37ms
- GET / 200 in 369ms
- GET /_next/static/css/app/layout.css?v=1754667941698 404 in 30ms
- GET /_next/static/chunks/main-app.js?v=1754667941698 404 in 96ms
- GET /_next/static/chunks/app-pages-internals.js 404 in 62ms
- GET /_next/static/chunks/app/layout.js 404 in 33ms
- GET /_next/static/chunks/app/page.js 404 in 28ms
- GET / 200 in 133ms
- GET /_next/static/css/app/layout.css?v=1754667945732 404 in 29ms
- GET /_next/static/chunks/main-app.js?v=1754667945732 404 in 23ms
- GET /_next/static/chunks/app/layout.js 404 in 34ms
- GET /_next/static/chunks/app-pages-internals.js 404 in 24ms
- GET /_next/static/chunks/app/page.js 404 in 25ms
- GET / 200 in 95ms
- GET /_next/static/css/app/layout.css?v=1754667951526 404 in 22ms
- GET /_next/static/chunks/main-app.js?v=1754667951526 404 in 24ms
- GET /_next/static/chunks/app-pages-internals.js 404 in 24ms
- GET /_next/static/chunks/app/layout.js 404 in 25ms
- GET /_next/static/chunks/app/page.js 404 in 32ms
- GET / 200 in 92ms
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+> Ready on http://0.0.0.0:3000
+> Socket.IO server running at ws://0.0.0.0:3000/api/socketio
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
-}
- ○ Compiling /_error ...
- ✓ Compiled /_error in 4.5s (1102 modules)
- GET /_next/static/css/app/layout.css?v=1754667969863 500 in 9821ms
- GET /_next/static/chunks/webpack.js?v=1754667969863 500 in 9447ms
- GET /_next/static/chunks/app-pages-internals.js 500 in 9310ms
- GET /_next/static/chunks/main-app.js?v=1754667969863 500 in 9428ms
- GET /_next/static/chunks/app/layout.js 500 in 8552ms
- GET /_next/static/chunks/app/page.js 500 in 8561ms
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app/page.js'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app/page.js',
-  page: '/'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/pages/_document.js'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/pages/_document.js'
-}
- GET / 500 in 909ms
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz'
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz'
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz'
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/home/z/my-project/.next/cache/webpack/client-development-fallback/0.pack.gz'
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app/page.js'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app/page.js',
-  page: '/'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/pages/_document.js'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/pages/_document.js'
-}
- GET / 500 in 201ms
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app-paths-manifest.json',
-  page: '/'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/pages-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/pages-manifest.json'
-}
- GET / 500 in 146ms
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
-}
- GET /_next/static/chunks/fallback/webpack.js 500 in 259ms
- GET /_next/static/chunks/fallback/main.js 500 in 258ms
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
-}
- GET /_next/static/chunks/fallback/react-refresh.js 500 in 274ms
- GET /_next/static/chunks/fallback/pages/_app.js 500 in 272ms
- ⨯ [Error: ENOENT: no such file or directory, open '/home/z/my-project/.next/server/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/z/my-project/.next/server/app-paths-manifest.json'
-}
- GET /_next/static/chunks/fallback/pages/_error.js 500 in 296ms

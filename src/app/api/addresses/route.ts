@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     
     // For now, use a hardcoded user ID for testing
     // In production, you would validate the JWT token properly
-    const userId = "cmfz0rz5r0000xexpa3l1x6q8" // Use the admin user ID
+    const userId = "admin-1754603433474" // Use the admin user ID
 
     const addresses = await db.address.findMany({
       where: { userId },
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     
     // For now, use a hardcoded user ID for testing
     // In production, you would validate the JWT token properly
-    const userId = "cmfz0rz5r0000xexpa3l1x6q8" // Use the admin user ID
+    const userId = "admin-1754603433474" // Use the admin user ID
 
     const { street, number, complement, neighborhood, city, state, zipCode } = await request.json()
 
