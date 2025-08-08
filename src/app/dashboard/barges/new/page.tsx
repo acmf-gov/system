@@ -71,9 +71,12 @@ export default function NewBargePage() {
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          ...formData,
+          name: formData.title,
+          description: formData.description,
+          productId: formData.productId,
           targetGrams: parseInt(formData.targetGrams),
-          unitPrice: parseFloat(formData.unitPrice)
+          pricePerGram: parseFloat(formData.unitPrice),
+          startDate: formData.eventDate
         })
       })
 

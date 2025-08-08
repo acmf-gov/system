@@ -30,6 +30,16 @@ export const encrypt = (data: string): string => {
 // Decrypt data
 export const decrypt = (encryptedData: string): string => {
   try {
+    // Check if the data is empty or not properly formatted
+    if (!encryptedData || encryptedData.length === 0) {
+      throw new Error('Encrypted data is empty')
+    }
+    
+    // Check if it's already in plain text (not encrypted)
+    if (!encryptedData.includes('U2FsdGVkX1')) { // AES encrypted data prefix
+      return encryptedData
+    }
+    
     const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY)
     const decrypted = bytes.toString(CryptoJS.enc.Utf8)
     
@@ -102,7 +112,10 @@ export const decryptUserData = (encryptedData: any): any => {
       console.warn('Failed to decrypt phone, keeping original')
       // Keep the original phone if decryption fails
       if (decryptedData.phone) {
-        decryptedData.phone = decryptedData.phone
+        // If original phone exists, keep it
+      } else {
+        // If no original phone, try to use the encrypted one as fallback
+        decryptedData.phone = decryptedData.phoneEncrypted
       }
     }
   }
@@ -112,6 +125,12 @@ export const decryptUserData = (encryptedData: any): any => {
   otherSensitiveFields.forEach(field => {
     if (decryptedData[field]) {
       try {
+        // Check if it's already decrypted (not encrypted format)
+        if (typeof decryptedData[field] === 'string' && !decryptedData[field].includes('U2FsdGVkX1')) {
+          // Already decrypted, keep as is
+          return
+        }
+        
         const decryptedField = decrypt(decryptedData[field])
         if (decryptedField && decryptedField.length > 0) {
           decryptedData[field] = decryptedField
@@ -119,6 +138,10 @@ export const decryptUserData = (encryptedData: any): any => {
       } catch (error) {
         console.warn(`Failed to decrypt ${field}, keeping original`)
         // Keep the original field if decryption fails
+        // If the field looks encrypted, try to use it as is
+        if (typeof decryptedData[field] === 'string' && decryptedData[field].includes('U2FsdGVkX1')) {
+          // It's encrypted but we can't decrypt it, keep it encrypted
+        }
       }
     }
   })

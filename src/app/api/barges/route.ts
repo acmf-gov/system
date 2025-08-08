@@ -51,13 +51,31 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Verify that the product exists
+    const product = await db.product.findUnique({
+      where: { id: productId }
+    })
+
+    if (!product) {
+      return NextResponse.json(
+        { error: 'Produto não encontrado' },
+        { status: 404 }
+      )
+    }
+
     const barge = await db.barge.create({
       data: {
         name,
         description,
         targetGrams,
         pricePerGram,
-        startDate: new Date(startDate)
+        startDate: new Date(startDate),
+        bargeProducts: {
+          create: {
+            productId,
+            isActive: true
+          }
+        }
       },
       include: {
         bargeProducts: {

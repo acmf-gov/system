@@ -44,12 +44,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar se usuário já existe
-    const existingUser = await db.user.findUnique({
+    // Verificar se usuário já existe (por telefone original ou hash)
+    const existingUserByPhone = await db.user.findUnique({
       where: { phone }
     })
+    
+    // Generate hash for phone search
+    const { generateHash } = await import('@/lib/encryption')
+    const phoneHash = generateHash(phone)
+    
+    const existingUserByHash = await db.user.findUnique({
+      where: { phoneHash }
+    })
 
-    if (existingUser) {
+    if (existingUserByPhone || existingUserByHash) {
       return NextResponse.json(
         { error: 'Usuário já existe com este telefone' },
         { status: 409 }
