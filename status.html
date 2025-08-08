@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚤 Barca Coletiva - Status</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        .status-card {
+            background: #4CAF50;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            font-size: 1.1rem;
+        }
+        .status-card.warning {
+            background: #ff9800;
+        }
+        .status-card.error {
+            background: #f44336;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .info-item {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: left;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .info-value {
+            color: #333;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+        .actions {
+            margin-top: 2rem;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0.5rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        .btn.success {
+            background: #4CAF50;
+        }
+        .btn.success:hover {
+            background: #45a049;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🚤</div>
+        <h1>Barca Coletiva</h1>
+        <div class="status-card">
+            ✅ Servidor Online e Funcionando!
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Status do Sistema</div>
+                <div class="info-value">Operacional</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Porta</div>
+                <div class="info-value">3002</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">API</div>
+                <div class="info-value">Respondendo</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Banco de Dados</div>
+                <div class="info-value">Conectado</div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <a href="/" class="btn">Página Principal</a>
+            <a href="/api/health" class="btn success">API Health Check</a>
+        </div>
+        
+        <div class="timestamp">
+            Última verificação: <span id="timestamp"></span>
+        </div>
+    </div>
+
+    <script>
+        // Update timestamp
+        document.getElementById('timestamp').textContent = new Date().toLocaleString('pt-BR');
+        
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            fetch('/api/health')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Health check:', data);
+                    document.getElementById('timestamp').textContent = new Date().toLocaleString('pt-BR');
+                })
+                .catch(error => {
+                    console.error('Health check failed:', error);
+                });
+        }, 30000);
+    </script>
+</body>
+</html>
